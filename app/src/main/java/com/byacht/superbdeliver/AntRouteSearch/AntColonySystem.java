@@ -44,6 +44,12 @@ public class AntColonySystem {
 //            }
 //        }
         distance = dis;
+        for (int i = 0; i < distance.length; i ++) {
+            for (int j = 0; j < distance[0].length; j++) {
+                Log.d("htout", "distance " + i + "<->" + j + ":" + distance[i][j]);
+            }
+        }
+
     }
 
     // 使用最邻近规则计算Lnn
@@ -123,7 +129,7 @@ public class AntColonySystem {
 
     // 局部更新规则
     void UpdateLocalPathRule(int r, int s) {
-        Log.d("htout", "r:" + r + " s:" + s);
+//        Log.d("htout", "r:" + r + " s:" + s);
         tau[r][s] = (1.0 - ALPHA) * tau[r][s] + ALPHA * (1.0 / (N * Lnn));
         tau[s][r] = tau[r][s];
     }

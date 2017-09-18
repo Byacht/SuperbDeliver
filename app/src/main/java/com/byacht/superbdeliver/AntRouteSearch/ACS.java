@@ -101,6 +101,8 @@ public class ACS {
         Point from  = new Point(C[s][0], C[s][1]);
         Point to = new Point(C[r][0], C[r][1]);
         tour.add(new Pair(from, to));
+        points[2 * (n - 1)] = points[2 * (n - 1) - 1];
+        points[2 * (n - 1) + 1] = points[0];
         return points;
     }
 

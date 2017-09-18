@@ -33,8 +33,8 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         //去电
         if(intent.getAction().equals(Intent.ACTION_NEW_OUTGOING_CALL)){
             String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-            Log.d("out", "call OUT:" + phoneNumber);
-            Log.d("out", "flag:" + flag + "flag2" + flag2);
+            Log.d("htout", "call OUT:" + phoneNumber);
+            Log.d("htout", "flag:" + flag + " flag2:" + flag2);
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE);
             tm.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
         }else{
@@ -61,11 +61,11 @@ public class PhoneCallReceiver extends BroadcastReceiver {
             super.onCallStateChanged(state, incomingNumber);
             switch (state) {
                 case TelephonyManager.CALL_STATE_IDLE:
-                    Log.d("out", "空闲状态" + " flag:" + flag + "flag2" + flag2);
+                    Log.d("htout", "空闲状态" + " flag:" + flag + " flag2:" + flag2);
                     if (flag > 0 && flag2 > 0) {
                         flag = 0;
                         flag2 = 0;
-                        Log.d("out", "拨打下一个电话");
+                        Log.d("htout", "拨打下一个电话");
                         if (currentIndex < phoneNumberList.size()) {
                             Intent intent = new Intent(Intent.ACTION_CALL);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -77,16 +77,16 @@ public class PhoneCallReceiver extends BroadcastReceiver {
                         }
                     }
                     if (flag > 0 && flag2 == 0) {
-                        Log.d("out", "拨打电话");
                         flag2++;
+                        Log.d("htout", "拨打电话 flag2:" + flag2);
                     }
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK:
-                    Log.d("out", "拨打或接听");
+                    Log.d("htout", "拨打或接听");
                     flag ++;
                     break;
                 case TelephonyManager.CALL_STATE_RINGING:
-                    Log.d("out", "来电号码:" + incomingNumber);
+                    Log.d("htout", "来电号码:" + incomingNumber);
                     break;
             }
         }

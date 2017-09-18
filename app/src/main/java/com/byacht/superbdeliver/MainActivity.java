@@ -96,11 +96,13 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             @Override
             public void setCallOver(boolean isCallOver) {
                 isCall = isCallOver;
+                Log.d("htout", "isCall:" + isCall);
             }
         });
         init();
         initPoint();
         simpleLocation();
+
     }
 
     private void initPoint() {
@@ -185,26 +187,39 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 }
             }
         }
-        getRouteFromACS();
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//
+//        }
+
     }
 
-    private void getRouteFromACS() {
-//        int fakeCity[][] = new int[6][2];
-//        ACS acs = new ACS();
-//        points = acs.ACSalgorithm(fakeCity, distance);
-        points = new int[12];
-        points[0] = 5;
-        points[1] = 1;
-        points[2] = 1;
-        points[3] = 0;
-        points[4] = 0;
-        points[5] = 2;
-        points[6] = 2;
-        points[7] = 3;
-        points[8] = 3;
-        points[9] = 4;
-        points[10] = 4;
-        points[11] = 5;
+    private void getRouteFromACS(){
+        int fakeCity[][] = new int[6][2];
+        ACS acs = new ACS();
+        for (int i = 0; i < distance.length; i++) {
+            for (int j = 0; j < distance[i].length; j++) {
+                Log.d("htout", i + "<->" + j + ":" + distance[i][j]);
+            }
+        }
+        points = acs.ACSalgorithm(fakeCity, distance);
+        for (int i = 0; i < points.length; i++) {
+            Log.d("htout", "points" + i + ":" + points[i]);
+        }
+//        points = new int[12];
+//        points[0] = 5;
+//        points[1] = 1;
+//        points[2] = 1;
+//        points[3] = 0;
+//        points[4] = 0;
+//        points[5] = 2;
+//        points[6] = 2;
+//        points[7] = 3;
+//        points[8] = 3;
+//        points[9] = 4;
+//        points[10] = 4;
+//        points[11] = 5;
     }
 
     @Override
@@ -257,12 +272,12 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
 
         List<String> numberList = new ArrayList<String>();
-        numberList.add("15622256731");
-        numberList.add("15622256731");
+        numberList.add("15913049468");
+        numberList.add("15913049468");
 
         List<String> numberList1 = new ArrayList<String>();
-        numberList1.add("15622256731");
-        numberList1.add("15622256731");
+        numberList1.add("15913049468");
+        numberList1.add("15913049468");
         numberCount = numberList.size();
 
         LatLng lat1 = new LatLng(23.16565, 113.341713);
@@ -270,19 +285,15 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
         OrderInfo orderInfo1 = new OrderInfo(lat1, numberList);
         OrderInfo orderInfo2 = new OrderInfo(lat2, numberList1);
-        mOrderInfos.add(orderInfo2);
         mOrderInfos.add(orderInfo1);
+        mOrderInfos.add(orderInfo2);
 
         addressCount = mOrderInfos.size();
     }
 
     @OnClick(R.id.btn_show_route)
     public void showRoute() {
-        for (int i = 0; i < distance.length; i++) {
-            for (int j = 0; j < distance[i].length; j++) {
-                Log.d("htout", i + "<->" + j + ":" + distance[i][j]);
-            }
-        }
+        getRouteFromACS();
 
         //根据蚁群算法计算的路径绘制路径
         for (int i = 0; i < pointNumber - 1; i++) {
