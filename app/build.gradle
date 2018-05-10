@@ -24,9 +24,19 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.github.LuckSiege.PictureSelector:picture_library:v2.1.7'
+    compile 'com.android.support:design:24.1.0'
+    compile 'com.android.support:recyclerview-v7:24.1.0'
+    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'com.google.code.gson:gson:2.8.2'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     testCompile 'junit:junit:4.12'
     compile files('libs/AMap3DMap_5.3.0_AMapSearch_5.3.1_20170817.jar')
+    compile files('libs/AMap_Location_V3.5.0_20170731.jar')
 }

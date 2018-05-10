@@ -29,6 +29,12 @@ public class RideRouteOverlay extends RouteOverlay{
     private RidePath ridePath;
 
     public List<RideStep> customRidePaths = new ArrayList<RideStep>();
+    private int mPathColor;
+
+    public void setPathColor(int color) {
+        mPathColor = color;
+    }
+
     /**
      * 通过此构造函数创建骑行路线图层。
      * @param context 当前activity。
@@ -63,11 +69,13 @@ public class RideRouteOverlay extends RouteOverlay{
 
 //                addRideStationMarkers(rideStep, latLng);
                 addRidePolyLines(rideStep);
+                Log.d("htout", "pathsteps count:" + rideStep.getPolyline().size());
             }
-            mPolylineOptions.add(endPoint);
+//            mPolylineOptions.add(endPoint);
             Log.d("htout", endPoint.toString());
             addStartAndEndMarker();
 
+            mPolylineOptions.color(mPathColor);
             showPolyline();
         } catch (Throwable e) {
             e.printStackTrace();

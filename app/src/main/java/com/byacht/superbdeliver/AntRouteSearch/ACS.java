@@ -82,13 +82,24 @@ public class ACS {
             }
             AntColonySystem.UpdateGlobalPathRule(globalTour, Lgb);
         }
+        // 整理tour
+        int p, start = 0;
+        int[] reTour = new int[n];
+        for (p = 0; p < n; p++) {
+            if (globalTour[p] == 0)
+                break;
+        }
+        for(int j = 0; j < n; j++) {
+            reTour[j] = globalTour[p%n];
+            p++;
+        }
         ArrayList<Pair> tour = new ArrayList<Pair>();
         int points[] = new int[2 * n];
         int r, s;
-        s = globalTour[1];
+        s = reTour[1];
         for(int i = 0; i < n - 1; i++)  {
-            r = globalTour[i];
-            s = globalTour[i + 1];
+            r = reTour[i];
+            s = reTour[i + 1];
             Point from = new Point(C[r][0], C[r][1]);
             Point to = new Point(C[s][0], C[s][1]);
             Pair object = new Pair(from, to);
@@ -97,7 +108,7 @@ public class ACS {
             points[2 * i + 1] = s;
         }
         // 从最后的城市回到起始城市
-        r = globalTour[0];
+        r = reTour[0];
         Point from  = new Point(C[s][0], C[s][1]);
         Point to = new Point(C[r][0], C[r][1]);
         tour.add(new Pair(from, to));

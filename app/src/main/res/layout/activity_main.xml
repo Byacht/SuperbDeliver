@@ -20,18 +20,13 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
         <Button
-            android:id="@+id/btn_get_data"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="导入数据"/>
-
-        <Button
             android:id="@+id/btn_show_route"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="显示路径"/>
+            android:layout_margin="10dp"
+            android:text="显示路径"
+            android:background="@drawable/btn_bg"/>
     </LinearLayout>
 
 </RelativeLayout>

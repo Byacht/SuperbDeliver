@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.byacht.superbdeliver.activity.OrderInfoActivity">
+
+    <Button
+        android:id="@+id/start_deliver_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startDeliver"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:text="开始配送"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:background="@drawable/btn_bg"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/order_info_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/start_deliver_btn"></android.support.v7.widget.RecyclerView>
+
+
+
+</RelativeLayout>

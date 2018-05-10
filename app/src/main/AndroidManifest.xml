@@ -2,23 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.byacht.superbdeliver">
 
-    <!--允许程序打开网络套接字-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--允许程序设置内置sd卡的写权限-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 允许程序打开网络套接字 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 允许程序设置内置sd卡的写权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!--允许程序获取网络状态-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--允许程序访问WiFi网络信息-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--允许程序读写手机状态和身份-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
+    <!-- 允许程序获取网络状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- 允许程序访问WiFi网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- 允许程序读写手机状态和身份 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 用于申请调用A-GPS模块 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -31,22 +38,35 @@
             android:value="51b454996a12462939c599e4a6a5b9ef"/>
 
         <activity android:name=".MainActivity">
+        </activity>
+
+        <service android:name="com.amap.api.location.APSService">
+        </service>
+
+        <!-- <receiver android:name=".Receiver.PhoneCallReceiver"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.PHONE_STATE"/> -->
+        <!-- <action android:name="android.intent.action.NEW_OUTGOING_CALL" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <activity android:name=".activity.HomePageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <service android:name="com.amap.api.location.APSService" >
-        </service>
-
-        <!--<receiver android:name=".Receiver.PhoneCallReceiver">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.PHONE_STATE"/>-->
-                <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.RegisterActivity"/>
+        <activity
+            android:name=".activity.StatisticsActivity"
+            android:theme="@style/MaterialAnimations"/>
+        <activity android:name=".activity.OrderInfoActivity">
+        </activity>
+        <activity android:name=".activity.ForgetPasswordActivity">
+        </activity>
+        <activity android:name=".activity.AddOrderInfoActivity">
+        </activity>
     </application>
 
 </manifest>
