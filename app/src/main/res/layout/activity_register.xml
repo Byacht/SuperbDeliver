@@ -161,7 +161,7 @@
             android:layout_marginLeft="4dp"
             android:gravity="center_vertical"
             android:layout_toRightOf="@id/notice_img"
-            android:text="密码不超过8位字符,请使用英文字母和阿拉伯数字混合"
+            android:text="密码不低于8位字符,请使用英文字母和阿拉伯数字混合"
             android:textColor="#9E9E9E"
             android:textSize="10sp"/>
     </RelativeLayout>

@@ -12,6 +12,8 @@ public class Constant {
     public static String REGISTER_URL = "http://39.108.73.165:8080/Android_App/createUser";
     //获取验证码
     public static String GET_CODE_URL = "http://39.108.73.165:8080/Android_App/getCode";
+    //修改密码
+    public static String RESET_PASSWORD_URL = "http://39.108.73.165:8080/Android_App/resetPassword";
     //获取订单信息
     public static String GET_ORDER_INFO_URL = "http://39.108.73.165:8080/Android_App/getOrderMessage";
 }

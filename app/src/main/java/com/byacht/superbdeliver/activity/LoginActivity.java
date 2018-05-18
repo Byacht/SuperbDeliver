@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.byacht.superbdeliver.R;
 import com.byacht.superbdeliver.Utils.Constant;
+import com.byacht.superbdeliver.Utils.LogUtil;
 import com.byacht.superbdeliver.Utils.NetworkUtil;
 import com.byacht.superbdeliver.Utils.ToastUtil;
 import com.byacht.superbdeliver.model.UserInfo;
@@ -63,6 +64,7 @@ public class LoginActivity extends Activity {
         mBackImg = (ImageView) findViewById(R.id.title_back);
         mRegisterTv = (TextView) findViewById(R.id.register_title_tv);
 
+        mAccountEt.setInputType(InputType.TYPE_NULL);
         mBackImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +98,10 @@ public class LoginActivity extends Activity {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call call = NetworkUtil.getCallByPost(Constant.LOGIN_URL, mAccountEt.getText().toString(), mPasswordEt.getText().toString());
+                mAccountEt.setInputType(InputType.TYPE_CLASS_TEXT);
+                String json = "{\"phoneNumber\":\"" + mAccountEt.getText().toString() + "\","
+                        + "\"password\":\"" + mPasswordEt.getText().toString() + "\"}";
+                Call call = NetworkUtil.getCallByPost(Constant.LOGIN_URL, json);
                 call.enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -105,23 +110,16 @@ public class LoginActivity extends Activity {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Gson gson = new Gson();
-                        String data = response.body().string();
-                        final UserInfo userInfo = gson.fromJson(data, UserInfo.class);
+                        final int code = Integer.valueOf(response.body().string());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (userInfo.getId() == -1) {
+                                if (code == -1) {
                                     ToastUtil.show(LoginActivity.this, "账号不存在");
-                                } else if (userInfo.getId() == -2) {
+                                } else if (code == -2) {
                                     ToastUtil.show(LoginActivity.this, "密码错误");
                                 } else {
-                                    SharedPreferences sharedPreferences = getSharedPreferences("Account ID", Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putInt("id", userInfo.getId());
-                                    editor.putString("name", userInfo.getName());
-                                    editor.putString("portrait", userInfo.getPortrait());
-                                    editor.commit();
+                                    getUserInfo(code);
                                     finish();
                                 }
                             }
@@ -139,4 +137,30 @@ public class LoginActivity extends Activity {
             }
         });
     }
+
+    private void getUserInfo(final int id) {
+        Call call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + "/" + id + "/getPersonalData");
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Gson gson = new Gson();
+                String data = response.body().string();
+                LogUtil.e("htout", data);
+                UserInfo userInfo = gson.fromJson(data, UserInfo.class);
+                SharedPreferences sharedPreferences = getSharedPreferences("Account ID", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("id", id);
+                editor.putString("account name", userInfo.getName());
+                editor.putString("portrait", userInfo.getPortrait());
+                editor.commit();
+            }
+        });
+    }
+
+
 }

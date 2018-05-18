@@ -29,7 +29,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/deliver"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -37,7 +37,9 @@
             android:name="com.amap.api.v2.apikey"
             android:value="51b454996a12462939c599e4a6a5b9ef"/>
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/MaterialAnimations">
         </activity>
 
         <service android:name="com.amap.api.location.APSService">
@@ -61,11 +63,17 @@
         <activity
             android:name=".activity.StatisticsActivity"
             android:theme="@style/MaterialAnimations"/>
-        <activity android:name=".activity.OrderInfoActivity">
+        <activity
+            android:name=".activity.OrderInfoActivity"
+            android:theme="@style/MaterialAnimations">
         </activity>
         <activity android:name=".activity.ForgetPasswordActivity">
         </activity>
-        <activity android:name=".activity.AddOrderInfoActivity">
+        <activity
+            android:name=".activity.AddOrderInfoActivity"
+            android:theme="@style/MaterialAnimations">
+        </activity>
+        <activity android:name=".activity.InputOrderInfoActivity">
         </activity>
     </application>
 

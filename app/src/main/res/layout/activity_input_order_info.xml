@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:src="@color/colorPrimary"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:src="#545B58"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:background="@drawable/order_bg"
+        android:elevation="10dp"
+        android:layout_centerInParent="true"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:text="订单"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_margin="10dp"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/input_order_et"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="10dp"
+            android:hint=" 输入地点"
+            android:background="@drawable/et_bg"/>
+
+        <EditText
+            android:id="@+id/input_phone_et"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="10dp"
+            android:hint=" 手机号码，以空格隔开"
+            android:background="@drawable/et_bg"/>
+
+        <ListView
+            android:id="@+id/search_lv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+
+        <Button
+            android:id="@+id/submit_btn"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="提交"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

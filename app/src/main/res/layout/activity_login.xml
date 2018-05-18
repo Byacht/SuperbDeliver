@@ -58,6 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="手机号"
+            android:inputType="number"
             android:theme="@style/MyEditText"/>
         <ImageView
             android:id="@+id/delete_account_img"

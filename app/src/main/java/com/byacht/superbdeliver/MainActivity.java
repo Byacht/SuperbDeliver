@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -48,6 +49,8 @@ import com.byacht.superbdeliver.AntRouteSearch.ACS;
 import com.byacht.superbdeliver.AntRouteSearch.MultiACS;
 import com.byacht.superbdeliver.Receiver.PhoneCallReceiver;
 import com.byacht.superbdeliver.Utils.AmapUtil;
+import com.byacht.superbdeliver.Utils.Constant;
+import com.byacht.superbdeliver.Utils.NetworkUtil;
 import com.byacht.superbdeliver.Utils.ToastUtil;
 import com.byacht.superbdeliver.model.OrderInfo;
 import com.google.gson.Gson;
@@ -112,11 +115,14 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private int mCurrentPosition = 0;
 
     private List<String> mNoAnswerNumberList;
+    private int mUserId;
 
     //当前是否在通话
     private boolean mIsCalling;
     private int mSelectPath;
 
+    private List<Integer> mArrivedTimeList;
+    private List<Double> mTwoPointTimeList;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -129,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
         mNoAnswerNumberList = new ArrayList<String>();
 
+        SharedPreferences sharedPreferences = getSharedPreferences("Account ID", Context.MODE_PRIVATE);
+        mUserId = sharedPreferences.getInt("id", 1);
         //注册拨号状态监听广播
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.intent.action.PHONE_STATE");
@@ -143,6 +151,59 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 mNoAnswerNumberList.clear();
                 //拨号结束，显示未接通号码
                 showNoAnswerList();
+                for (Integer id : mOrderInfos.get(points[mSelectPath][2 * mNextAddress + 1]).getOrderId()) {
+                    Call call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + "/" + mUserId + "/finishOrder/" + id);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+
+                        }
+                    });
+                }
+                int curAddress = mNextAddress;
+                mTwoPointTimeList.remove(0);
+                getArrivedTime();
+                List<Integer> orderIdList = mOrderInfos.get(points[mSelectPath][2 * curAddress + 1]).getOrderId();
+                List<String> jsonList = new ArrayList<>();
+                for (int j = mNextAddress; j < mOrderInfos.size(); j++) {
+                    int index = 0;
+                    StringBuilder sb = new StringBuilder("[");
+                    for (int k = 0; k < orderIdList.size(); k++) {
+                        sb.append(orderIdList.get(k));
+                        sb.append(",");
+                    }
+                    sb.append(mOrderInfos.get(orderIdList.get(orderIdList.size() - 1)));
+                    sb.append("]");
+                    String json = "{\"time\":" + mArrivedTimeList.get(index++) + ","
+                            + "\"orderId\":" + sb.toString() + "}";
+                    jsonList.add(json);
+                    curAddress++;
+                }
+                StringBuilder jsonSb = new StringBuilder("[");
+                for (int i = 0; i < jsonList.size() - 1; i++) {
+                    jsonSb.append(jsonList.get(i));
+                    jsonSb.append(",");
+                }
+                jsonSb.append(jsonList.get(jsonList.size()));
+                jsonSb.append("]");
+                    Log.d("htout", "add order:" + jsonSb.toString());
+                Call call = NetworkUtil.getCallByPost(Constant.ORIGINAL_URL, jsonSb.toString());
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                    }
+                });
             }
         });
         //初始化地图
@@ -158,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         if (mAMap == null) {
             mAMap = mMapView.getMap();
         }
+//        mAMap.setMapLanguage(AMap.ENGLISH);
         registerListener();
         mRouteSearch = new RouteSearch(this);
         mRouteSearch.setRouteSearchListener(this);
@@ -185,6 +247,8 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         if (mOrderInfos == null) {
             mOrderInfos = new ArrayList<>();
         }
+        mArrivedTimeList = new ArrayList<>(mOrderInfos.size());
+        mTwoPointTimeList = new ArrayList<>(mOrderInfos.size());
         //记录送餐地点数目
         pointNumber = mOrderInfos.size();
         addressCount = mOrderInfos.size();
@@ -225,22 +289,23 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private boolean isFirstSearchRoute;
     @OnClick(R.id.btn_show_route)
     public void showRoute() {
-        if (!isFirstSearchRoute) {
-            getRouteFromACS();
-            isFirstSearchRoute = true;
-        }
+        if (isDataReady()) {
+            if (!isFirstSearchRoute) {
+                getRouteFromACS();
+                getTime();
+                getArrivedTime();
+                isFirstSearchRoute = true;
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle("请选择一条路线")
+                    .setItems(new String[]{"路线1", "路线2", "路线3"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int j) {
+                            mSelectPath = j;
+                            mAMap.clear();// 清理地图上的所有覆盖物
+                            //根据蚁群算法计算的路径绘制路径
 
-
-        new AlertDialog.Builder(this)
-                .setTitle("请选择一条路线")
-                .setItems(new String[]{"路线1", "路线2", "路线3"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int j) {
-                        mSelectPath = j;
-                        mAMap.clear();// 清理地图上的所有覆盖物
-                        //根据蚁群算法计算的路径绘制路径
-
-                        int[] color = {getResources().getColor(R.color.path_blue), getResources().getColor(R.color.path_pink), getResources().getColor(R.color.path_green)};
+                            int[] color = {getResources().getColor(R.color.path_blue), getResources().getColor(R.color.path_pink), getResources().getColor(R.color.path_green)};
 //                        for (int j = 0; j < 2; j++) {
                             customRidePaths.clear();
                             for (int i = 0; i < pointNumber - 1; i++) {
@@ -261,12 +326,24 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                             rideRouteOverlay.removeFromMap();
                             rideRouteOverlay.addToMap();
                             rideRouteOverlay.zoomToSpan();
-                    }
-                })
-                .create()
-                .show();
+                        }
+                    })
+                    .create()
+                    .show();
+        } else {
+            ToastUtil.show(this, "路径规划中，请稍后再试");
+        }
+    }
 
-
+    private boolean isDataReady() {
+        for (int i = 0; i < distance.length; i++) {
+            for (int j = 0; j < distance[0].length; j++) {
+                if (i != j && distance[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void getRouteFromACS() {
@@ -283,6 +360,76 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             }
 
         }
+    }
+
+    private void getTime() {
+        int curIndex = 0;
+        for (int i = 0; i < mOrderInfos.size() - 1; i++) {
+            double twoPointDistance = distance[points[mSelectPath][2 * curIndex]][points[mSelectPath][2 * curIndex + 1]];
+            Log.d("htout", "distance:" + distance[points[mSelectPath][2 * curIndex]][points[mSelectPath][2 * curIndex + 1]]);
+            double time = twoPointDistance / 400;
+            mTwoPointTimeList.add(time);
+            Log.d("htout", "time:" + time);
+            curIndex++;
+        }
+    }
+
+    private void getArrivedTime() {
+        mArrivedTimeList.clear();
+        int arrivedTime = 0;
+        for (int i = 0; i < mTwoPointTimeList.size(); i++) {
+            arrivedTime += Math.round(mTwoPointTimeList.get(i));
+            if (i != 0) {
+                arrivedTime += 4;
+            }
+            mArrivedTimeList.add(arrivedTime);
+            Log.d("htout", "arrivedtime:" + arrivedTime);
+        }
+//        updateArrivedTime();
+    }
+
+    private void updateArrivedTime() {
+        int curAddress = 0;
+        Log.d("htout", "aaaa");
+
+        List<String> jsonList = new ArrayList<>();
+        Log.d("htout", "bbbb");
+        int index = 0;
+        for (int j = curAddress; j < mOrderInfos.size() - 1; j++) {
+            List<Integer> orderIdList = mOrderInfos.get(points[mSelectPath][2 * curAddress + 1]).getOrderId();
+
+            StringBuilder sb = new StringBuilder("[");
+            for (int k = 0; k < orderIdList.size() - 1; k++) {
+                sb.append(orderIdList.get(k));
+                sb.append(",");
+            }
+            sb.append(orderIdList.get(orderIdList.size() - 1));
+            sb.append("]");
+            String json = "{\"time\":" + mArrivedTimeList.get(index++) + ","
+                    + "\"orderId\":" + sb.toString() + "}";
+            jsonList.add(json);
+            curAddress++;
+        }
+        StringBuilder jsonSb = new StringBuilder("[");
+        for (int i = 0; i < jsonList.size() - 1; i++) {
+            jsonSb.append(jsonList.get(i));
+            jsonSb.append(",");
+        }
+        jsonSb.append(jsonList.get(jsonList.size() - 1));
+        jsonSb.append("]");
+        Log.d("htout", "add order:" + jsonSb.toString());
+        Call call = NetworkUtil.getCallByPost(Constant.ORIGINAL_URL + "/2/setArriveTime", jsonSb.toString());
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("htout", "update:" + response.body().string());
+            }
+        });
     }
 
     @Override
@@ -349,12 +496,17 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 }
             }
             if (zoomTime > 0) {
-                mAMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+                mAMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                 zoomTime--;
+            } else {
+                MyLocationStyle myLocationStyle = new MyLocationStyle();
+                myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);//连续定位、且将视角移动到地图中心点，定位蓝点跟随设备移动。（1秒1次定位）
+                mAMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
             }
 
             if (addressCount > 0) {
                 //获取当前位置到下一个送餐地点的距离
+                Log.d("htout", "point:" +  mOrderInfos.get(points[mSelectPath][2 * mNextAddress + 1]).getYPoint() + " " + mOrderInfos.get(points[mSelectPath][2 * mNextAddress + 1]).getXPoint());
                 currentDistance = AmapUtil.getDistance(location.getLongitude(), location.getLatitude(),
                         mOrderInfos.get(points[mSelectPath][2 * mNextAddress + 1]).getYPoint(), mOrderInfos.get(points[mSelectPath][2 * mNextAddress + 1]).getXPoint());
                 if (currentDistance < NOTIFY_DISTANCE && !mIsCalling) {
@@ -491,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                         CallLog.Calls.DATE,  //拨打时间
                         CallLog.Calls.DURATION   //通话时长
                 }, null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
-        int count = mOrderInfos.get(addressCount).getPhoneNumberList().size();
+        int count = mOrderInfos.get(addressCount - 1).getPhoneNumberList().size();
         while (cursor.moveToNext()) {
             String number = cursor.getString(1);
             int callDuration = Integer.parseInt(cursor.getString(4));

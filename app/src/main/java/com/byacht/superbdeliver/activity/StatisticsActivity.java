@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -88,7 +89,7 @@ public class StatisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistics);
         ButterKnife.bind(this);
 
-        mAccountId = getIntent().getIntExtra("accountId", 0);
+        mAccountId = getIntent().getIntExtra("id", 0);
 
         initView();
         setupToolBar();
@@ -113,11 +114,11 @@ public class StatisticsActivity extends AppCompatActivity {
         mSearchTime = TimeUtil.getCurrentTime().substring(0, 7);
         mSelectedYear = mSearchTime.substring(0, 4);
         mSelectedMonth = mSearchTime.substring(5, 7);
-        mShowTimeTv.setText(mSelectedYear + "-" + mSelectedMonth);
+        mShowTimeTv.setText(mSelectedYear);
         mDataList = new ArrayList<>();
-        getData(MONTH_STATISTIC);
-        generateInitialLineData(MONTH_STATISTIC);
-        generateLineData(ChartUtils.COLOR_BLUE);
+        getData(YEAR_STATISTIC);
+//        generateInitialLineData(YEAR_STATISTIC);
+//        generateLineData(ChartUtils.COLOR_BLUE);
     }
 
     private void setupToolBar() {
@@ -140,7 +141,7 @@ public class StatisticsActivity extends AppCompatActivity {
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setSelectedTabIndicatorColor(Color.alpha(0));
-
+//        mTabLayout.getTabAt(1).select();
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -160,10 +161,9 @@ public class StatisticsActivity extends AppCompatActivity {
                         mShowTimeTv.setText(mSearchTime);
                         hideChooseTimeLayout();
                         getData(MONTH_STATISTIC);
-                        generateInitialLineData(MONTH_STATISTIC);
-                        generateLineData(ChartUtils.COLOR_BLUE);
                     }
                 });
+
             }
 
             @Override
@@ -218,8 +218,6 @@ public class StatisticsActivity extends AppCompatActivity {
                         mSelectedYear = String.valueOf(year);
                         mSearchTime = mSelectedYear + "-";
                         getData(YEAR_STATISTIC);
-                        generateInitialLineData(YEAR_STATISTIC);
-                        generateLineData(ChartUtils.COLOR_BLUE);
                     }
                 },
                 Integer.valueOf(mSelectedYear), 1, 1);
@@ -333,10 +331,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // And set initial max viewport and current viewport- remember to set viewports after data.
         Viewport v;
+        if (mMaxDeliver == 0) {
+            mMaxDeliver = 5;
+        }
         if (type == MONTH_STATISTIC) {
-            v = new Viewport(0, 80, 30, 0);
+            v = new Viewport(0, mMaxDeliver * 1.5f, 30, 0);
         } else {
-            v = new Viewport(0, 2500, 12, 0);
+            v = new Viewport(0, mMaxDeliver * 1.5f, 12, 0);
         }
 
         mChart.setMaximumViewport(v);
@@ -356,23 +357,27 @@ public class StatisticsActivity extends AppCompatActivity {
         int index = 0;
         for (PointValue value : line.getValues()) {
             // Change target only for Y value.
-            float num = mDataList.get(index);
+            float num = mDataList.get(index++);
             count += num;
             value.setTarget(value.getX(), num);
         }
         mOrderCountTv.setText("总配送数：" + count + "份");
         // Start new data animation with 300ms duration;
         mChart.startDataAnimation(300);
+        Log.d("htout", "generate");
     }
 
+    private int mMaxDeliver;
 
-    private void getData(int type) {
+    private void getData(final int type) {
         Call call;
         if (type == YEAR_STATISTIC) {
-            call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + mAccountId + "/getYearData/" +  mSelectedYear + mSelectedMonth);
+            call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + "/" + mAccountId + "/getYearData/" +  mSelectedYear);
         } else {
-            call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + mAccountId + "/getMonthData/" + mSelectedYear + mSelectedMonth);
+            call = NetworkUtil.getCallByGet(Constant.ORIGINAL_URL + "/" + mAccountId + "/getMonthData/" + mSelectedYear + mSelectedMonth);
         }
+        Log.d("htout", "id:" + mAccountId + " " + mSelectedYear + mSelectedMonth);
+        mMaxDeliver = 0;
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -381,13 +386,25 @@ public class StatisticsActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.toString();
-                String[] data = result.split(";");
+                String result = response.body().string();
+
+                String[] data = result.split(":");
+                data[1] = data[1].substring(1, data[1].length() - 2);
+                Log.d("htout", "result:" + data[1]);
+                String[] nums = data[1].split(",");
                 mDataList.clear();
-                for (int i = 0; i < data.length; i++) {
-                    int num = Integer.valueOf(data[i].split(":")[1]);
+                for (int i = 0; i < nums.length; i++) {
+                    int num = Integer.valueOf(nums[i]);
                     mDataList.add(num);
+                    mMaxDeliver = mMaxDeliver > num ? mMaxDeliver : num;
                 }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        generateInitialLineData(type);
+                        generateLineData(ChartUtils.COLOR_BLUE);
+                    }
+                });
             }
         });
     }
@@ -395,13 +412,6 @@ public class StatisticsActivity extends AppCompatActivity {
     public static int MONTH_STATISTIC = 0;
     public static int YEAR_STATISTIC = 1;
 
-//    private void notifyTimeChange(int searchWay) {
-//        if (searchWay == 0) {
-//            getData();
-//        } else if (searchWay == 1) {
-//            searchDataOfCustomTime();
-//        }
-//    }
 
     @Override
     protected void onDestroy() {

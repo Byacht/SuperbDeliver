@@ -6,7 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#BBDEFB"
     tools:context="com.byacht.superbdeliver.activity.OrderInfoActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_order"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    </android.support.v7.widget.Toolbar>
 
     <Button
         android:id="@+id/start_deliver_btn"
@@ -24,6 +35,7 @@
         android:id="@+id/order_info_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_order"
         android:layout_above="@id/start_deliver_btn"></android.support.v7.widget.RecyclerView>
 
 

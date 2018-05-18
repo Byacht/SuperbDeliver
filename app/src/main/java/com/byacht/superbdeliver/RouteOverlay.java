@@ -87,7 +87,7 @@ public class RouteOverlay {
      * @since V2.1.0
      */
     protected BitmapDescriptor getStartBitmapDescriptor() {
-        return BitmapDescriptorFactory.fromResource(R.drawable.amap_start);
+        return BitmapDescriptorFactory.fromResource(R.drawable.place);
     }
     /**
      * 给终点Marker设置图标，并返回更换图标的图片。如不用默认图片，需要重写此方法。
@@ -124,8 +124,8 @@ public class RouteOverlay {
                 .title("\u8D77\u70B9"));
         // startMarker.showInfoWindow();
 
-        endMarker = mAMap.addMarker((new MarkerOptions()).position(endPoint)
-                .icon(getEndBitmapDescriptor()).title("\u7EC8\u70B9"));
+//        endMarker = mAMap.addMarker((new MarkerOptions()).position(endPoint)
+//                .icon(getEndBitmapDescriptor()).title("\u7EC8\u70B9"));
         // mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPoint,
         // getShowRouteZoom()));
     }

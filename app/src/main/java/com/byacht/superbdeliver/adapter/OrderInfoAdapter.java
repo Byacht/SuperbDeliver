@@ -61,12 +61,11 @@ public class OrderInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
         if (holder instanceof OrderInfoViewHolder) {
-            ((OrderInfoViewHolder)holder).foodTv.setText("烤鸭饭");
             ((OrderInfoViewHolder) holder).phoneNumberTv.setText(mInfoList.get(i - 1).getPhoneNumberList().get(position - mAddressIndexList.get(i - 1) - 1));
 
             Log.d("htout", "kaoyafan:" + position);
         } else {
-            ((OrderInfoAddressViewHolder)holder).addressTv.setText("送餐地点：" + mInfoList.get(i - 1).getXPoint() + "," + mInfoList.get(i - 1).getYPoint());
+            ((OrderInfoAddressViewHolder)holder).addressTv.setText(mInfoList.get(i - 1).getXPoint() + "," + mInfoList.get(i - 1).getYPoint());
             Log.d("htout", "point:" + position + " " + mInfoList.get(i - 1).getXPoint());
         }
     }
@@ -99,12 +98,10 @@ public class OrderInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     class OrderInfoViewHolder extends RecyclerView.ViewHolder {
-        TextView foodTv;
         TextView phoneNumberTv;
 
         public OrderInfoViewHolder(View itemView) {
             super(itemView);
-            foodTv = (TextView) itemView.findViewById(R.id.order_info_food_tv);
             phoneNumberTv = (TextView) itemView.findViewById(R.id.order_info_phone_tv);
         }
     }

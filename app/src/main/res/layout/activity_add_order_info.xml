@@ -5,20 +5,108 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EEEEEE"
     android:orientation="vertical"
     tools:context="com.byacht.superbdeliver.activity.AddOrderInfoActivity">
 
-    <EditText
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_add_order"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:elevation="3dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/edit"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"
+                android:text="订单信息"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="5dp"
+            android:background="@color/divider"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_gravity="center_vertical"
+                android:id="@+id/longitude_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:background="@null"
+                android:inputType="numberDecimal"
+                android:hint="经度"/>
+            <View
+                android:layout_gravity="center_vertical"
+                android:layout_width="1dp"
+                android:layout_height="15dp"
+                android:layout_margin="5dp"
+                android:background="@color/divider"/>
+            <EditText
+                android:layout_gravity="center_vertical"
+                android:id="@+id/latitude_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:layout_margin="5dp"
+                android:inputType="numberDecimal"
+                android:hint="纬度"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="5dp"
+            android:background="@color/divider"/>
+
+        <EditText
+            android:id="@+id/add_phone_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="手机号码，以空格分隔"
+            android:layout_margin="5dp"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/submit_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_bg"
-        android:text="提交"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="提交"
+        android:textColor="@color/white"/>
+
 
 </LinearLayout>

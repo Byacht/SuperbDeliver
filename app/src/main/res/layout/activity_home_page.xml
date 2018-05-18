@@ -28,7 +28,7 @@
             android:layout_marginTop="20dp"/>
     </RelativeLayout>
     <RelativeLayout
-        android:id="@+id/mine_part2"
+        android:id="@+id/my_data_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#FFFFFF"
@@ -63,11 +63,11 @@
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
     <RelativeLayout
-        android:id="@+id/mine_part5"
+        android:id="@+id/my_order_info_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#FFFFFF"
-        android:layout_below="@id/mine_part2"
+        android:layout_below="@id/my_data_layout"
         android:layout_marginTop="3dp">
         <ImageView
             android:id="@+id/mine_pic4"
@@ -98,10 +98,11 @@
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/input_order_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#FFFFFF"
-        android:layout_below="@id/mine_part5"
+        android:layout_below="@id/my_order_info_layout"
         android:layout_marginTop="3dp">
         <ImageView
             android:id="@+id/mine_pic"
@@ -111,7 +112,7 @@
             android:layout_marginRight="8dp"
             android:layout_centerVertical="true"
             android:scaleType="centerInside"
-            android:src="@drawable/my_info"/>
+            android:src="@drawable/edit"/>
         <TextView
             android:id="@+id/input_order_info_tv"
             android:layout_width="wrap_content"

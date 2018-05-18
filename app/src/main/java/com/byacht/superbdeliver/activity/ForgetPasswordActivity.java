@@ -3,6 +3,7 @@ package com.byacht.superbdeliver.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -13,9 +14,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.byacht.superbdeliver.R;
+import com.byacht.superbdeliver.Utils.Constant;
+import com.byacht.superbdeliver.Utils.NetworkUtil;
+import com.byacht.superbdeliver.Utils.ToastUtil;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ForgetPasswordActivity extends AppCompatActivity {
 
@@ -56,6 +71,7 @@ public class ForgetPasswordActivity extends AppCompatActivity {
 
     private boolean mPasswordVisitable;
     private boolean mConfirmPasswordVisitable;
+    private String mCookies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +120,86 @@ public class ForgetPasswordActivity extends AppCompatActivity {
                     finish();
                 } else {
                     mAlertLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        mRegisterGetConfirmTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String json = "{\"phoneNumber\":\"" + mRegisterPhoneEt.getText().toString() + "\"}";
+                Call call = NetworkUtil.getCallByPost(Constant.GET_CODE_URL, json);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Headers responseHeaders = response.headers();
+                        mCookies = responseHeaders.get("Set-Cookie").split(";")[0];
+                        Log.d("htout", "cookies:" + mCookies);
+                    }
+                });
+            }
+        });
+
+        mRegisterBtn.setText("提交");
+        mRegisterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String password = mRegisterPasswordEt.getText().toString();
+                Pattern numPattern = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,100}$");
+                Matcher numMatch = numPattern.matcher(password);
+                Log.d("htout", "num:" + numMatch.matches());
+                if (numMatch.matches()) {
+                    if (password.equals(mRegisterConfirmPasswordEt.getText().toString())) {
+                        String json = "{\"code\":\"" + mRegisterEnterConfirmEt.getText().toString() + "\","
+                                + "\"phoneNumber\":\"" + mRegisterPhoneEt.getText().toString() + "\","
+                                + "\"password\":\"" + mRegisterPasswordEt.getText().toString() + "\"}";
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
+                        Request request = new Request
+                                .Builder()
+                                .post(requestBody)
+                                .addHeader("Cookie", mCookies)
+                                .url(Constant.RESET_PASSWORD_URL)
+                                .build();
+                        Call call = NetworkUtil.getOkhttpClient().newCall(request);
+                        call.enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+
+//                            final int resultCode = Integer.valueOf(response.body().string());
+                                final String resultCode = response.body().string();
+                                Log.d("htout", "code:" + resultCode);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (resultCode.equals("200")) {
+                                            Toast.makeText(ForgetPasswordActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                                            mAlertLayout.setVisibility(View.GONE);
+                                            finish();
+                                        } else if (resultCode.equals("-1")) {
+                                            ToastUtil.show(ForgetPasswordActivity.this, "验证码错误");
+                                        } else if (resultCode.equals("-2")) {
+                                            ToastUtil.show(ForgetPasswordActivity.this, "账号不存在");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                    } else {
+                        mAlertLayout.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    ToastUtil.show(ForgetPasswordActivity.this, "密码过于简单");
                 }
             }
         });

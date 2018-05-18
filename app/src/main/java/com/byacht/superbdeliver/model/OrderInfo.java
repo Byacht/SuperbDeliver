@@ -7,6 +7,7 @@ import com.amap.api.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,11 +22,14 @@ public class OrderInfo implements Parcelable{
         mYPoint = yPoint;
     }
 
+    @SerializedName("phoneNumber")
     private List<String> phoneNumberList;
-    @SerializedName("xpoint")
+    private List<Integer> orderId;
+    @SerializedName("xPoint")
     private double mXPoint;
-    @SerializedName("ypoint")
+    @SerializedName("yPoint")
     private double mYPoint;
+    private String place;
 
     public List<String> getPhoneNumberList() {
         return phoneNumberList;
@@ -33,6 +37,14 @@ public class OrderInfo implements Parcelable{
 
     public void setPhoneNumberList(List<String> phoneNumberList) {
         this.phoneNumberList = phoneNumberList;
+    }
+
+    public List<Integer> getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(List<Integer> orderId) {
+        this.orderId = orderId;
     }
 
     public double getXPoint() {
@@ -51,6 +63,14 @@ public class OrderInfo implements Parcelable{
         mYPoint = YPoint;
     }
 
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -59,14 +79,19 @@ public class OrderInfo implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringList(this.phoneNumberList);
+        dest.writeList(this.orderId);
         dest.writeDouble(this.mXPoint);
         dest.writeDouble(this.mYPoint);
+        dest.writeString(this.place);
     }
 
     protected OrderInfo(Parcel in) {
         this.phoneNumberList = in.createStringArrayList();
+        this.orderId = new ArrayList<Integer>();
+        in.readList(this.orderId, Integer.class.getClassLoader());
         this.mXPoint = in.readDouble();
         this.mYPoint = in.readDouble();
+        this.place = in.readString();
     }
 
     public static final Creator<OrderInfo> CREATOR = new Creator<OrderInfo>() {
